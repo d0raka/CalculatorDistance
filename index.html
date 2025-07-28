@@ -12,7 +12,7 @@
     <div class="navbar">
       <div class="navbar-title">מחשבון מרחק</div>
       <nav class="navbar-menu">
-        <a href="#">נבנה ע"י דור אקא</a>
+        <a href="#">נבנה ע"י דור אקא Dor@</a> <!--לערוך-->
       </nav>
     </div>
   </header>
@@ -26,12 +26,12 @@
           <input type="text" id="businessOrder" placeholder="למשל: Chicken Station #368">
         </div>
         <div class="form-group">
-          <label for="manualDistance">מרחק ידני במטרים (אופציונלי, גובר על הקישור)</label>
+          <label for="manualDistance">מרחק מסלול במטרים (חובה)</label>
           <input type="number" id="manualDistance" placeholder="למשל: 1700" min="1">
         </div>
         <div class="form-group">
           <label>
-            <input type="checkbox" id="bonusToggle" onchange="toggleBonus()"> בונוס (לא חובה)
+            <input type="checkbox" id="bonusToggle" onchange="toggleBonus()"> בונוס (אופציונלי)
           </label>
           <input type="number" id="bonus" placeholder="הזן בונוס באחוזים" min="0" max="100" style="display:none; margin-top:0.5rem;">
         </div>
@@ -72,15 +72,16 @@
         </div>
 
         <!-- Instructions card -->
-        <div class="card instructions">
-          <h3 class="instructions-title">איך להשתמש במחשבון</h3>
+        <div class="card instructions" style="padding-top: 12px; padding-bottom: 12px;">
+          <h4 class="instructions-title" style="margin-bottom: 2px;">איך להשתמש במחשבון</h4>
           <ul class="instructions-list">
             <li>שדה שם העסק ומספר ההזמנה הוא אופציונלי – ניתן להשאיר ריק.</li>
-            <li>הדבקת קישור ל‑Google Maps או OpenStreetMap תנסה לחלץ את המרחק האמיתי בין הנקודות ולחשב על פי מסלול מוצע.</li>
-            <li>אם לא סופק מרחק ידני והמערכת לא הצליחה לחלץ מרחק מהקישור, מתבצע חישוב מרחק אווירי (קו ישר) בין הנקודות.</li>
-            <li>ניתן להזין מרחק ידני במטרים – ערך זה גובר על המרחק המופק מהקישור.</li>
-            <li>סימון תיבת הבונוס יפתח שדה להזנת אחוז בונוס שיתווסף לסכום הסופי.</li>
-            <li>כפתור “העתק תשלום” מעתיק את הסכום בלבד (ללא סימן ₪), ו“העתק תיאור הזמנה” מעתיק את תיאור ההזמנה.</li>
+            <li>במידה והוזן מרחק ידני ,החישוב יתבצע על פי המרחק שהוזן בלבד</li>
+            <li>במידה והוזן ערך בשורת הבונוס , המחשבון יחשב את התשלום כולל אחוזי הבונוס.</li>
+            <li>הדבקת קישור ל‑Google Maps או OpenStreetMap תוודא שהמרחק תואם למרחק שהוזן לפני</li>
+            <li>במידה ולא הוזן מרחק בתיבה ,החישוב תשלום יחושב על פי מרחק אוורי (יעודכן בקרוב למסלול בשטח)</li>
+            <li>כפתור “העתק תשלום” מעתיק את הסכום בלבד (ללא סימן ₪), ו“העתק תיאור הזמנה” מעתיק את התיאור.</li>
+            <li>המרת קישור OSRM ל‑Google Maps - מאפשר להמיר כל מסלול בOSRM לקישור בGoogle Maps</li>
           </ul>
         </div>
       </div>

@@ -24,7 +24,7 @@ header {
     width: 100%;
     background: linear-gradient(90deg, #0057ff, #007bff);
     color: var(--secondary-color);
-    padding: 1.5rem 0;
+    padding: 0.5rem 0;
     text-align: center;
     font-size: 2.2rem;
     font-weight: 700;
@@ -158,12 +158,11 @@ button:not(:disabled):hover {
 .instructions {
     border: 2px solid var(--primary-color);
     background-color: #f0f5ff;
-    margin-top: 1rem;
 }
 
 .instructions-title {
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
     font-size: 1.4rem;
     color: var(--primary-color);
     font-weight: 600;

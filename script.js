@@ -106,7 +106,7 @@ async function calculate() {
 
     // Validate link format
     if (!isGMap(link)) {
-        out.textContent = 'נא לוודא שהקישור הוא להוראות ב‑Google Maps או ב‑OpenStreetMap.';
+        out.textContent = 'נא לוודא שהקישור הוא למסלול ב-Google Maps או ב-OSRM.';
         out.classList.add('error');
         document.getElementById('copyBtn').disabled = true;
         return;
