@@ -372,7 +372,16 @@ async function calculate() {
     plainSummary += `${t.paymentLabel}: ₪ ${finalFee}`;
     out.innerHTML = htmlSummary;
     out.dataset.text = plainSummary;
-    out.dataset.description = businessOrder;
+    // Prepare a description string for the copy description button. This should
+    // include the business/order name and the "additional payment" text but
+    // omit the description label itself. If no business/order name was
+    // provided, set the description to an empty string so that the copy
+    // description button will do nothing.
+    let descriptionForCopy = '';
+    if (businessOrder) {
+        descriptionForCopy = `${businessOrder} | ${t.additionalPayment}`;
+    }
+    out.dataset.description = descriptionForCopy;
     out.classList.remove('hidden');
     document.getElementById('copyBtn').disabled = false;
 }
