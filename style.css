@@ -11,12 +11,23 @@
     --font-family: 'Rubik', 'Segoe UI', sans-serif;
 }
 
-body {
+html, body {
     margin: 0;
     font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text-color);
-    direction: rtl;
+    /* Direction will be set dynamically via JavaScript according to language */
+    /* Prevent the page from scrolling and ensure it fits within the viewport */
+    height: 100%;
+    overflow-y: hidden;
+}
+
+/* Hide scrollbars across browsers to give a static page appearance */
+body::-webkit-scrollbar {
+    display: none;
+}
+body {
+    scrollbar-width: none; /* Firefox */
 }
 
 
@@ -39,13 +50,13 @@ header {
 main {
     max-width: 1200px;
     margin: auto;
-    padding: 2rem;
+    padding: 0.5rem;
 }
 
 .main-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 1rem;
     justify-content: center;
     align-items: flex-start;
 }
@@ -62,14 +73,14 @@ main {
     background: var(--secondary-color);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    padding: 2rem;
+    padding: 1rem;
     min-width: 300px;
     flex: 1 1 48%;
     box-sizing: border-box;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
 }
@@ -223,7 +234,7 @@ footer {
 .navbar {
     background: linear-gradient(90deg, #0057ff, #007bff);
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -254,4 +265,26 @@ footer {
 .navbar-menu a:hover {
     opacity: 0.8;
     text-decoration: underline;
+}
+
+/* Language toggle button inside navbar */
+.lang-toggle {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.lang-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Hidden class to hide result containers until data is available */
+.hidden {
+    display: none !important;
 }
