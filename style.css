@@ -1,7 +1,9 @@
 
 :root {
+    /* Color palette inspired by modern tech brands */
     --bg-color: #f7f9fc;
-    --primary-color: #0057ff;
+    /* A vibrant yet soft blue reminiscent of Google's brand */
+    --primary-color: #1a73e8;
     --secondary-color: #ffffff;
     --text-color: #222222;
     --text-muted: #666666;
@@ -20,19 +22,11 @@ body {
 }
 
 
+/* The header simply holds our navigation; styling is applied on the .navbar */
 header {
-    width: 100%;
-    background: linear-gradient(90deg, #0057ff, #007bff);
-    color: var(--secondary-color);
-    padding: 1.5rem 0;
-    text-align: center;
-    font-size: 2.2rem;
-    font-weight: 700;
     position: sticky;
     top: 0;
     z-index: 999;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(6px);
 }
 
 
@@ -127,7 +121,7 @@ button:not(:disabled) {
 }
 
 button:not(:disabled):hover {
-    background-color: #003dcc;
+    background-color: #0c59c0;
 }
 
 .result-container {
@@ -146,11 +140,21 @@ button:not(:disabled):hover {
     font-size: 1.3rem;
 }
 
+/* Converter card title styling */
+.converter-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
 footer {
     margin-top: 3rem;
     text-align: center;
     font-size: 0.9rem;
     color: var(--text-muted);
+    padding-bottom: 2rem;
 }
 
 .error {
@@ -163,30 +167,29 @@ footer {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: var(--accent-color);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 10px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     font-size: 1rem;
     z-index: 1000;
+    animation: popupFade 0.3s ease-in-out;
 }
-
 
 @keyframes popupFade {
     0% { opacity: 0; transform: translateY(10px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
-#popup {
-    animation: popupFade 0.3s ease-in-out;
-}
+/* removed duplicate popup animation rule */
 
 
 
 /* NavBar Styling */
 .navbar {
-    background: linear-gradient(90deg, #0057ff, #007bff);
+    /* Use the primary color and a darker shade for a subtle gradient */
+    background: linear-gradient(90deg, var(--primary-color), #0c59c0);
     color: white;
     padding: 1rem 2rem;
     display: flex;

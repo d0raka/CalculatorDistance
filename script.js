@@ -28,6 +28,37 @@ function extractDistanceFromLink(url) {
     }
 }
 
+// Parse coordinate pairs from a direction link. Returns an array of strings like ['lat1,lon1', 'lat2,lon2'] or null on failure.
+function parseCoordsFromLink(url) {
+    try {
+        const decoded = decodeURIComponent(url);
+        const coords = decoded.match(/(\d{2}\.\d+),(\d{2}\.\d+)/g);
+        return coords && coords.length >= 2 ? coords.slice(0, 2) : null;
+    } catch {
+        return null;
+    }
+}
+
+// Attempt to fetch a real route distance from OSRM. Returns the distance in meters or 0 on failure.
+async function getRouteDistance(coords) {
+    if (!coords || coords.length < 2) return 0;
+    try {
+        const [lat1, lon1] = coords[0].split(',').map(Number);
+        const [lat2, lon2] = coords[1].split(',').map(Number);
+        // OSRM expects lon,lat order
+        const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+        const resp = await fetch(url);
+        if (!resp.ok) return 0;
+        const data = await resp.json();
+        if (data.routes && data.routes[0] && typeof data.routes[0].distance === 'number') {
+            return Math.round(data.routes[0].distance);
+        }
+    } catch (e) {
+        // ignore errors and fall back
+    }
+    return 0;
+}
+
 function feeByDistance(m) {
     if (m <= 100) return 3;
     let fee = 3;
@@ -63,7 +94,7 @@ function feeForWalkers(m) {
     return result;
 }
 
-function calculate() {
+async function calculate() {
     const businessOrder = document.getElementById('businessOrder').value.trim();
     const vehicle = document.querySelector('input[name="vehicle"]:checked')?.value;
     const link = document.getElementById('gmap').value.trim();
@@ -73,37 +104,45 @@ function calculate() {
 
     out.classList.remove('error');
 
+    // Validate link format
     if (!isGMap(link)) {
         out.textContent = 'נא לוודא שהקישור הוא להוראות ב‑Google Maps או ב‑OpenStreetMap.';
         out.classList.add('error');
         document.getElementById('copyBtn').disabled = true;
         return;
     }
-
+    // Validate vehicle selection
     if (!vehicle) {
         out.textContent = 'בחר כלי תחבורה.';
         out.classList.add('error');
         document.getElementById('copyBtn').disabled = true;
         return;
     }
-
-    
+    // Determine distance: manual override or attempt route distance then fall back to straight line
     const manualDist = Number(document.getElementById('manualDistance').value);
-    const dist = manualDist > 0 ? manualDist : extractDistanceFromLink(link);
+    let dist = 0;
+    if (manualDist > 0) {
+        dist = manualDist;
+    } else {
+        const coords = parseCoordsFromLink(link);
+        // try real route distance
+        dist = await getRouteDistance(coords);
+        if (!dist) {
+            dist = extractDistanceFromLink(link);
+        }
+    }
     if (!dist || dist < 10) {
         out.textContent = 'לא הצלחנו לזהות מרחק מתוך הקישור.';
         out.classList.add('error');
         document.getElementById('copyBtn').disabled = true;
         return;
     }
-
+    // Calculate fee
     const baseFee = vehicle === 'Walker' ? feeForWalkers(dist) : feeByDistance(dist);
     const rawFee = baseFee * (1 + bonus / 100);
     const finalFee = Math.ceil(rawFee);
 
     const feeHtml = `<span style="color:#27ae60;font-weight:bold;font-size:1.3em;">₪ ${finalFee}</span>`;
-    
-    
     const htmlSummary =
         `${businessOrder ? "תיאור: " + businessOrder + " | תוספת תשלום<br>" : ""}` +
         `מרחק: ${dist} מטר<br>` +
@@ -114,9 +153,6 @@ function calculate() {
         `תשלום: ₪ ${finalFee}`;
     out.innerHTML = htmlSummary;
     out.dataset.text = plainSummary;
-    
-    
-
     document.getElementById('copyBtn').disabled = false;
 }
 
@@ -127,8 +163,13 @@ function copyResult() {
     const amount = match[1];
     navigator.clipboard.writeText(amount).then(() => {
         const popup = document.getElementById('popup');
+        // show a friendly message and hide it after a few seconds
+        popup.textContent = 'התשלום הועתק';
         popup.style.display = 'block';
-        setTimeout(() => popup.style.display = 'none', 5000);
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.textContent = '';
+        }, 5000);
     }).catch(() => {
         alert('לא ניתן להעתיק לטלפון זה.');
     });
