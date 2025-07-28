@@ -41,7 +41,6 @@ html, body {
     color: white;
     padding: 0.5rem 1rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
@@ -52,12 +51,25 @@ html, body {
 .navbar-title {
     font-size: 1.8rem;
     font-weight: 700;
+    flex: 1;
 }
 
 .navbar-menu {
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* Centered credit link styling */
+.navbar .credit {
+    flex: 1;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
 }
 
 .navbar-menu a {
