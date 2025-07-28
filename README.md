@@ -1,44 +1,81 @@
-# 🧮 Distance Fee Calculator – Dor Aka
+# Distance & Delivery Fee Calculator Web App
 
-A sleek, interactive one-page tool for calculating delivery bonuses based on distance, vehicle type, and optional bonus percentages. Fully supports both Google Maps and OpenStreetMap direction links.
+This project is a modern, responsive web application for calculating delivery fees based on travel distance. It
+uses a clean, mobile‑friendly design inspired by Google and Apple product aesthetics and supports both
+Hebrew (RTL) and English (LTR) user interfaces.
 
-## 🔧 Key Features
+The calculator is intended for couriers and dispatchers who need to quickly estimate payment for delivery
+jobs. Simply paste a Google Maps or OSRM route link, choose a transport type, and the app will compute
+the delivery fee—including optional bonus percentages—using a tiered pricing model. A manual distance
+override is also available for special cases.
 
-- **Order Input Fields**: Includes business name, order number, distance in meters, bonus percentage, and vehicle type selection (Walker or Vehicle).
-- **Link Validation**: Smart validation for both Google Maps and OpenStreetMap direction URLs.
-- **Dynamic Calculation**: Accurate fee algorithm that adjusts based on distance brackets and vehicle type.
-- **RTL Design**: Hebrew-friendly, right-to-left layout with clear and readable UI.
-- **Instant Summary**: Displays business name, order ID, distance, and final fee – the fee is bold, large, and highlighted in green.
-- **Utility Buttons**: Includes a reset button and a "Copy Result" button for quick sharing (e.g., on WhatsApp or internal tools).
+## Features
 
-## 🗂 Usage
+```
+Route distance parsing: Paste a Google Maps or OSRM directions link and the app attempts to
+fetch the real route distance via the OSRM API. If that fails it falls back to a straight‑line (aerial)
+calculation.
+Manual distance override: You can enter a custom distance in metres to override the value
+extracted from the link.
+Bonus calculation: Enable a bonus checkbox and specify a percentage to be added to the base fee.
+Vehicle‑specific pricing: Select from “Walker”, “Bicycle”, “Motorcycle” or “Vehicle” to apply the
+appropriate tiered pricing scheme.
+Clipboard helpers: Copy just the numeric payment (₪ symbol stripped) or the order description
+(business and order number) to the clipboard with a click. A small popup confirms when the value
+has been copied.
+Bilingual interface: The entire UI can switch between Hebrew and English on the fly. All labels,
+placeholders and messages update automatically, and the page direction toggles between RTL and
+LTR.
+Responsive design: Cards are stacked or aligned side‑by‑side depending on screen width, ensuring
+readability on both desktop and mobile devices. A sticky header keeps navigation visible.
+No scrolling: The layout and spacing are tuned so that all content fits within a single viewport
+without a page scroll bar.
+```
+## Getting Started
 
-1. Download or clone this repository.
-2. Open `index.html` in any modern browser.
-3. Fill in the required fields, paste a Google Maps or OpenStreetMap directions link, and click **Calculate**.
-4. Use the **Copy** button to easily share the result.
+This project is a static HTML/JS/CSS application and requires no build tools or server. Clone or download the
+repository and open index.html directly in a web browser.
 
-> Example format:
->
-> ```
-> Chicken Station | Hahashmonaim #368
-> Distance: 1200 m
-> Fee: ₪ 15
-> ```
+```
+gitclone <repository_url>
+cd <repository_folder>
+# Open index.html in your browser of choice
+```
+#### • • • • • • • •
 
-## 🌐 Hosting (GitHub Pages)
 
-You can host this file via GitHub Pages:
+### Usage
 
-1. Create a new repository and upload the `index.html` file.
-2. Go to `Settings` > `Pages`.
-3. Under "Source", select `main` (or your branch) and `/root`.
-4. GitHub will give you a public link you can share.
+```
+Business & order (optional): Enter a combined business name and order number (e.g. Chicken
+Station #368). This field is optional and used for description copying only.
+Manual distance (optional): Specify a distance in metres if you want to override the route distance
+extracted from the link. Leave empty to use the distance from the link.
+Bonus: Check the bonus box if you wish to add a percentage bonus; an input will appear for the
+percentage value.
+Transport type: Choose one of the transport types (walker, bicycle, motorcycle, vehicle). This
+determines the tiered pricing.
+Link (required): Paste a Google Maps or OSRM directions link. The app will attempt to derive the
+route distance automatically.
+Calculate: Click Calculate to see the distance in metres and the computed payment. Buttons for
+copying the payment and the description become enabled once a valid result is produced.
+Language toggle: Use the language toggle button in the header to switch between Hebrew and
+English.
+```
+## Customising
 
-## ✅ No Dependencies
+```
+Translation strings: All UI strings are defined in the translations object in script.js. Add
+new keys or languages as needed.
+Pricing logic: Fee tiers for walkers and other vehicles are defined in feeForWalkers() and
+feeByDistance() in script.js. Adjust the thresholds or rates here to fit your business rules.
+Styling: Edit style.css to modify colours, typography or layout. Cards use CSS variables and
+flexbox for responsiveness.
+```
+## License
 
-This project is built as a single standalone HTML file. No frameworks, no libraries, no server – 100% client-side.
+This project is licensed under the terms of the LICENSE file in this repository.
 
-## 📄 License
+## Credits
 
-MIT – free to use, share, and modify.
+Built by **Dor Aka**. If you use this project or find it helpful, feel free to reach out!
