@@ -1,11 +1,17 @@
+/*
+ * Enhanced JavaScript logic for the distance calculator.
+ * Provides bilingual support (Hebrew/English), dynamic direction switching,
+ * result and conversion handling, bonus logic and OSRM conversion.
+ */
 
+// Determine if a URL is a Google Maps or OSRM directions link
 function isGMap(url) {
     const googlePattern = /^https?:\/\/(www\.)?google\.[a-z.]+\/maps\/dir/i;
     const osmPattern = /^https?:\/\/(www\.)?(openstreetmap|map\.project-osrm|osrm-frontend\.wolt)\./i;
     return googlePattern.test(url) || osmPattern.test(url);
 }
 
-// Translation definitions for Hebrew and English. Each language contains all UI strings.
+// Translation definitions for Hebrew and English.
 const translations = {
     he: {
         title: 'מחשבון מרחק',
@@ -34,10 +40,10 @@ const translations = {
         instructionsTitle: 'איך להשתמש במחשבון',
         instructionsList: [
             'שדה שם העסק ומספר ההזמנה הוא אופציונלי – ניתן להשאיר ריק.',
-            'במידה והוזן מרחק ידני ,החישוב יתבצע על פי המרחק שהוזן בלבד.',
-            'במידה והוזן ערך בשורת הבונוס , המחשבון יחשב את התשלום כולל אחוזי הבונוס.',
-            'הדבקת קישור ל‑Google Maps או OpenStreetMap תוודא שהמרחק תואם למרחק שהוזן לפני',
-            'במידה ולא הוזן מרחק בתיבה ,החישוב תשלום יחושב על פי מרחק אוירי (יעודכן בקרוב למסלול בשטח).',
+            'במידה והוזן מרחק ידני, החישוב יתבצע על פי המרחק שהוזן בלבד.',
+            'במידה והוזן ערך בשורת הבונוס, המחשבון יחשב את התשלום כולל אחוזי הבונוס.',
+            'הדבקת קישור ל‑Google Maps או OpenStreetMap תוודא שהמרחק תואם למרחק שהוזן לפני.',
+            'במידה ולא הוזן מרחק בתיבה, חישוב התשלום יתבצע על פי מרחק אוירי (יעודכן בקרוב למסלול בשטח).',
             'כפתור “העתק תשלום” מעתיק את הסכום בלבד (ללא סימן ₪), ו“העתק תיאור הזמנה” מעתיק את התיאור.',
             'המרת קישור OSRM ל‑Google Maps - מאפשר להמיר כל מסלול בOSRM לקישור בGoogle Maps.'
         ],
@@ -103,22 +109,21 @@ const translations = {
     }
 };
 
-// Current language; default is Hebrew
+// Current language (default to Hebrew)
 let currentLang = 'he';
 
-// Apply translations to all UI elements and adjust direction
+// Apply translations to all UI elements and adjust text direction
 function applyTranslations() {
     const t = translations[currentLang];
-    // Update page language and direction
+    // Update document language and direction
     document.documentElement.lang = currentLang;
     document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
-    // Also override body direction to match translation
     document.body.style.direction = currentLang === 'he' ? 'rtl' : 'ltr';
-    // Update titles
+    // Update page title and navbar title
     document.title = t.title;
     const navTitleEl = document.getElementById('navTitle');
     if (navTitleEl) navTitleEl.textContent = t.navTitle;
-    // Business
+    // Update business label and placeholder
     const businessLabelEl = document.getElementById('businessLabel');
     if (businessLabelEl) businessLabelEl.textContent = t.businessLabel;
     const businessInputEl = document.getElementById('businessOrder');
@@ -128,12 +133,12 @@ function applyTranslations() {
     if (manualLabelEl) manualLabelEl.textContent = t.manualLabel;
     const manualInputEl = document.getElementById('manualDistance');
     if (manualInputEl) manualInputEl.placeholder = t.manualPlaceholder;
-    // Bonus
+    // Bonus label and placeholder
     const bonusLabelEl = document.getElementById('bonusLabel');
     if (bonusLabelEl) bonusLabelEl.textContent = ' ' + t.bonusLabel;
     const bonusInputEl = document.getElementById('bonus');
     if (bonusInputEl) bonusInputEl.placeholder = t.bonusPlaceholder;
-    // Transport
+    // Transport section
     const transportLabelEl = document.getElementById('transportLabel');
     if (transportLabelEl) transportLabelEl.textContent = t.transportLabel;
     const walkerLabelEl = document.getElementById('walkerLabel');
@@ -144,65 +149,66 @@ function applyTranslations() {
     if (motorcycleLabelEl) motorcycleLabelEl.textContent = ' ' + t.motorcycle;
     const vehicleLabelEl = document.getElementById('vehicleLabel');
     if (vehicleLabelEl) vehicleLabelEl.textContent = ' ' + t.vehicle;
-    // Link
+    // Link label and placeholder
     const linkLabelEl = document.getElementById('linkLabel');
     if (linkLabelEl) linkLabelEl.textContent = t.linkLabel;
-    const gmapInputEl = document.getElementById('gmap');
-    if (gmapInputEl) gmapInputEl.placeholder = t.linkPlaceholder;
+    const linkInputEl = document.getElementById('gmap');
+    if (linkInputEl) linkInputEl.placeholder = t.linkPlaceholder;
     // Buttons
-    const calcBtn = document.getElementById('calcBtn');
-    if (calcBtn) calcBtn.textContent = t.calculateBtn;
-    const resetBtn = document.getElementById('resetBtn');
-    if (resetBtn) resetBtn.textContent = t.resetBtn;
-    const copyBtn = document.getElementById('copyBtn');
-    if (copyBtn) copyBtn.textContent = t.copyBtn;
-    const copyDescBtn = document.getElementById('copyDescBtn');
-    if (copyDescBtn) copyDescBtn.textContent = t.copyDescBtn;
-    const convertBtn = document.getElementById('convertBtn');
-    if (convertBtn) convertBtn.textContent = t.convertBtn;
-    // Converter
+    const calcBtnEl = document.getElementById('calcBtn');
+    if (calcBtnEl) calcBtnEl.textContent = t.calculateBtn;
+    const resetBtnEl = document.getElementById('resetBtn');
+    if (resetBtnEl) resetBtnEl.textContent = t.resetBtn;
+    const copyBtnEl = document.getElementById('copyBtn');
+    if (copyBtnEl) copyBtnEl.textContent = t.copyBtn;
+    const copyDescBtnEl = document.getElementById('copyDescBtn');
+    if (copyDescBtnEl) copyDescBtnEl.textContent = t.copyDescBtn;
+    const convertBtnEl = document.getElementById('convertBtn');
+    if (convertBtnEl) convertBtnEl.textContent = t.convertBtn;
+    // Converter title and OSRM label
     const converterTitleEl = document.getElementById('converterTitle');
     if (converterTitleEl) converterTitleEl.textContent = t.converterTitle;
     const osrmLabelEl = document.getElementById('osrmLabel');
     if (osrmLabelEl) osrmLabelEl.textContent = t.osrmLabel;
     const osrmInputEl = document.getElementById('osrmLink');
     if (osrmInputEl) osrmInputEl.placeholder = t.osrmPlaceholder;
-    // Instructions
-    const instructionsTitleEl = document.getElementById('instructionsTitle');
-    if (instructionsTitleEl) instructionsTitleEl.textContent = t.instructionsTitle;
+    // Instructions title and list items
+    const instTitleEl = document.getElementById('instructionsTitle');
+    if (instTitleEl) instTitleEl.textContent = t.instructionsTitle;
     const instItems = document.querySelectorAll('.instructions-list li');
     if (instItems) {
         t.instructionsList.forEach((txt, idx) => {
             if (instItems[idx]) instItems[idx].textContent = txt;
         });
     }
-    // Language toggle button text displays opposite language
+    // Language toggle text: show the language to switch to
     const langBtn = document.getElementById('langToggle');
     if (langBtn) langBtn.textContent = currentLang === 'he' ? 'English' : 'עברית';
 }
 
-// Toggle between Hebrew and English
+// Toggle the interface language
 function toggleLanguage() {
     currentLang = currentLang === 'he' ? 'en' : 'he';
     applyTranslations();
-    // Clear outputs and hide containers
-    const out = document.getElementById('result');
-    if (out) {
-        out.textContent = '';
-        out.classList.remove('error');
-        out.classList.add('hidden');
+    // Clear any displayed results and converted links
+    const resultEl = document.getElementById('result');
+    if (resultEl) {
+        resultEl.textContent = '';
+        resultEl.classList.remove('error');
+        resultEl.classList.add('hidden');
     }
-    const converted = document.getElementById('convertedLink');
-    if (converted) {
-        converted.textContent = '';
-        converted.classList.remove('error');
-        converted.classList.add('hidden');
+    const convertedEl = document.getElementById('convertedLink');
+    if (convertedEl) {
+        convertedEl.textContent = '';
+        convertedEl.classList.remove('error');
+        convertedEl.classList.add('hidden');
     }
-    const copyButton = document.getElementById('copyBtn');
-    if (copyButton) copyButton.disabled = true;
+    // Disable copy button when switching language
+    const copyBtnEl = document.getElementById('copyBtn');
+    if (copyBtnEl) copyBtnEl.disabled = true;
 }
 
-// Show a popup message for a few seconds
+// Display a popup message for a few seconds
 function showPopup(message) {
     const popup = document.getElementById('popup');
     if (!popup) return;
@@ -214,15 +220,14 @@ function showPopup(message) {
     }, 5000);
 }
 
+// Extract straight-line distance from a link when route fetch fails
 function extractDistanceFromLink(url) {
     try {
         const decoded = decodeURIComponent(url);
         const coords = decoded.match(/(\d{2}\.\d+),(\d{2}\.\d+)/g);
         if (!coords || coords.length < 2) return 0;
-
         const [lat1, lon1] = coords[0].split(',').map(Number);
         const [lat2, lon2] = coords[1].split(',').map(Number);
-
         const R = 6371000;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -237,7 +242,7 @@ function extractDistanceFromLink(url) {
     }
 }
 
-// Parse coordinate pairs from a direction link. Returns an array of strings like ['lat1,lon1', 'lat2,lon2'] or null on failure.
+// Parse coordinate pairs from a direction link
 function parseCoordsFromLink(url) {
     try {
         const decoded = decodeURIComponent(url);
@@ -248,13 +253,12 @@ function parseCoordsFromLink(url) {
     }
 }
 
-// Attempt to fetch a real route distance from OSRM. Returns the distance in meters or 0 on failure.
+// Attempt to fetch a real route distance from OSRM
 async function getRouteDistance(coords) {
     if (!coords || coords.length < 2) return 0;
     try {
         const [lat1, lon1] = coords[0].split(',').map(Number);
         const [lat2, lon2] = coords[1].split(',').map(Number);
-        // OSRM expects lon,lat order
         const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
         const resp = await fetch(url);
         if (!resp.ok) return 0;
@@ -268,6 +272,7 @@ async function getRouteDistance(coords) {
     return 0;
 }
 
+// Calculate fee by distance for non-walkers
 function feeByDistance(m) {
     if (m <= 100) return 3;
     let fee = 3;
@@ -283,6 +288,7 @@ function feeByDistance(m) {
     return fee;
 }
 
+// Fee tiers for walkers
 function feeForWalkers(m) {
     const tiers = [
         { max: 100, price: 7 },
@@ -303,6 +309,7 @@ function feeForWalkers(m) {
     return result;
 }
 
+// Main calculation handler
 async function calculate() {
     const businessOrder = document.getElementById('businessOrder').value.trim();
     const vehicle = document.querySelector('input[name="vehicle"]:checked')?.value;
@@ -313,7 +320,7 @@ async function calculate() {
 
     out.classList.remove('error');
     const t = translations[currentLang];
-    // Validate link format
+    // Validate link
     if (!isGMap(link)) {
         out.textContent = t.invalidLink;
         out.classList.add('error');
@@ -321,7 +328,7 @@ async function calculate() {
         document.getElementById('copyBtn').disabled = true;
         return;
     }
-    // Validate vehicle selection
+    // Validate vehicle
     if (!vehicle) {
         out.textContent = t.selectVehicle;
         out.classList.add('error');
@@ -329,14 +336,13 @@ async function calculate() {
         document.getElementById('copyBtn').disabled = true;
         return;
     }
-    // Determine distance: manual override or attempt route distance then fall back to straight line
+    // Determine distance: manual override or attempt route then fallback
     const manualDist = Number(document.getElementById('manualDistance').value);
     let dist = 0;
     if (manualDist > 0) {
         dist = manualDist;
     } else {
         const coords = parseCoordsFromLink(link);
-        // try real route distance
         dist = await getRouteDistance(coords);
         if (!dist) {
             dist = extractDistanceFromLink(link);
@@ -353,8 +359,7 @@ async function calculate() {
     const baseFee = vehicle === 'Walker' ? feeForWalkers(dist) : feeByDistance(dist);
     const rawFee = baseFee * (1 + bonus / 100);
     const finalFee = Math.ceil(rawFee);
-
-    const feeHtml = `<span style="color:#27ae60;font-weight:bold;font-size:1.3em;">₪ ${finalFee}</span>`;
+    const feeHtml = `<span>₪ ${finalFee}</span>`;
     let htmlSummary = '';
     let plainSummary = '';
     if (businessOrder) {
@@ -372,6 +377,7 @@ async function calculate() {
     document.getElementById('copyBtn').disabled = false;
 }
 
+// Copy the numeric payment amount to clipboard
 function copyResult() {
     const el = document.getElementById('result');
     const match = el.innerText.match(/₪\s*(\d+)/);
@@ -385,12 +391,14 @@ function copyResult() {
     });
 }
 
+// Reset form inputs and hide outputs
 function resetForm() {
     document.getElementById('businessOrder').value = '';
     document.querySelectorAll('input[name="vehicle"]').forEach(r => r.checked = false);
     document.getElementById('bonusToggle').checked = false;
-    document.getElementById('bonus').style.display = 'none';
-    document.getElementById('bonus').value = '';
+    const bonusEl = document.getElementById('bonus');
+    bonusEl.style.display = 'none';
+    bonusEl.value = '';
     document.getElementById('gmap').value = '';
     const resultEl = document.getElementById('result');
     if (resultEl) {
@@ -407,12 +415,14 @@ function resetForm() {
     document.getElementById('copyBtn').disabled = true;
 }
 
+// Show or hide the bonus input field
 function toggleBonus() {
     const input = document.getElementById('bonus');
     input.style.display = document.getElementById('bonusToggle').checked ? 'block' : 'none';
     if (!document.getElementById('bonusToggle').checked) input.value = '';
 }
 
+// Convert OSRM link to Google Maps link
 function convertToGoogle() {
     const input = document.getElementById('osrmLink').value.trim();
     const output = document.getElementById('convertedLink');
@@ -421,20 +431,20 @@ function convertToGoogle() {
         const url = new URL(input);
         const coords = decodeURIComponent(url.href).match(/(\d{2}\.\d+),(\d{2}\.\d+)/g);
         if (!coords || coords.length < 2) {
-            output.innerHTML = '<span class="error">' + t.decodeError + '</span>';
+            output.innerHTML = `<span class="error">${t.decodeError}</span>`;
             output.classList.remove('hidden');
             return;
         }
-        const gmapsUrl = "https://www.google.com/maps/dir/" + coords.join('/');
-        output.innerHTML = '<a href="' + gmapsUrl + '" target="_blank">' + gmapsUrl + '</a>';
+        const gmapsUrl = 'https://www.google.com/maps/dir/' + coords.join('/');
+        output.innerHTML = `<a href="${gmapsUrl}" target="_blank">${gmapsUrl}</a>`;
         output.classList.remove('hidden');
     } catch (e) {
-        output.innerHTML = '<span class="error">' + t.invalidOsrmLink + '</span>';
+        output.innerHTML = `<span class="error">${t.invalidOsrmLink}</span>`;
         output.classList.remove('hidden');
     }
 }
 
-
+// Copy the description (business name and order number) to clipboard
 function copyDescription() {
     const description = document.getElementById('result').dataset.description || '';
     if (!description) return;
@@ -446,7 +456,7 @@ function copyDescription() {
     });
 }
 
-// Initialize translations and hide result containers on page load
+// Initialize translations and hide containers on page load
 document.addEventListener('DOMContentLoaded', () => {
     applyTranslations();
     const resultEl = document.getElementById('result');
