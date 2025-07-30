@@ -473,14 +473,3 @@ document.addEventListener('DOMContentLoaded', () => {
     const convertedEl = document.getElementById('convertedLink');
     if (convertedEl) convertedEl.classList.add('hidden');
 });
-function sendToGoogleSheet(logEntry) {
-  const url = 'https://script.google.com/macros/s/AKfycbzSduMNBp5kuh4dhUBS49bCRIK0VXU3WP5_6ibP4_Bmc9uAj3jFb0wTyCYta2IIRgke/exec';
-  fetch(url, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(logEntry)
-  }).catch(err => {
-    console.warn('Failed to log to Google Sheet:', err);
-  });
-}
